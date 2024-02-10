@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Attendance System</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+<style>
+    #captureButton{
+    padding: .3rem;
+    background: none;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover,&:active{
+        background-color: rgb(180, 197, 211);
+    }
+}
+</style>
+<!-- ... (your existing code) -->
+
+<body>
+    <h1>Face Attendance System</h1>
+    <button id="captureButton">Capture and Save</button>
+    <input type="text" id="registerNumberInput" placeholder="Enter Register Number">
+    <!-- <img id="capturedFrame" src="" alt="Captured Frame"> -->
+    <p id="detectedNames"></p>
+    <!-- Add the <img> tag here -->
+    <!-- <img src="/get_frame" alt="Live Video Stream"> -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const captureButton = document.getElementById('captureButton');
+            const capturedFrame = document.getElementById('capturedFrame');
+            const detectedNames = document.getElementById('detectedNames');
+            const registerNumberInput = document.getElementById('registerNumberInput');
+
+            captureButton.addEventListener('click', function () {
+                // Prompt the user for register number
+                const registerNumber = registerNumberInput.value;
+
+                // Fetch data from Flask backend
+                fetch('/save_to_excel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ register_number: registerNumber }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response if needed
+                    console.log(data);
+                });
+
+                fetch(`/get_frame?register_number=${registerNumber}`)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        capturedFrame.src = url;
+                    });
+
+                fetch('/get_detected_names')
+                    .then(response => response.json())
+                    .then(data => {
+                        detectedNames.innerText = data.join('\n');
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,9 @@
+#captureButton{
+    padding: .3rem;
+    background: none;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover,&:active{
+        background-color: rgb(180, 197, 211);
+    }
+}
